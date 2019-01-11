@@ -1,9 +1,11 @@
 // Fix orientation of starry background.
 
-Shader "LawlorCode/Starry Backdrop Shader" {
+Shader "LawlorCode/GSFC Stars Shader" {
 // From: https://en.wikibooks.org/wiki/Cg_Programming/Unity/Skyboxes
    Properties {
-      _ColorScale ("Color Scaling (RGB)", Color) = (1,1,1,1)
+      _ColorTint ("Color Tint (RGB)", Color) = (1,1,1,1)
+      _StarScale ("Maximum Star Brightness", Range(0.1,10.0)) = 3.0
+      _StarPostGamma ("Final output gamma correction", Range(0.1,5.0)) = 0.35
       _EclipticAngle ("Rotation Angle of Ecliptic (degrees)", Range(0,360)) = 0
       _Cube ("Environment Map (RGB)", CUBE) = "" {}
    }
@@ -24,8 +26,10 @@ Shader "LawlorCode/Starry Backdrop Shader" {
 
          // User-specified uniforms
          samplerCUBE _Cube;   
-         float4 _ColorScale;
+         float3 _ColorTint;
+         float _StarScale;
          float _EclipticAngle;
+         float _StarPostGamma;
  
          struct vertexInput {
             float4 vertex : POSITION;
@@ -57,8 +61,9 @@ Shader "LawlorCode/Starry Backdrop Shader" {
          float4 frag(vertexOutput input) : COLOR
          {
             float3 tc=input.texcoord;
-            tc=float3(-tc.x,tc.z,tc.y); // flip to Z up (as baked into cubemap)
-            return texCUBE(_Cube, tc) * _ColorScale;
+            float3 t = texCUBE(_Cube, tc);
+            float len=length(t)+0.000001;
+            return float4(t * pow(len,1.0/_StarPostGamma-1.0) * _StarScale * _ColorTint, 1.0);
          }
  
          ENDCG
