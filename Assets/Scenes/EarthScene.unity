@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 3
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 2100000, guid: b6251696ff0477905b20d7b63f1ddd2b, type: 2}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 71aee5c0a975f59129dd4985b8b23936, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 170076734}
-  m_IndirectSpecularColor: {r: 0.0023133294, g: 0.002198108, b: 0.0022598733, a: 1}
+  m_IndirectSpecularColor: {r: 0.0020840433, g: 0.0020169045, b: 0.002031209, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -577,9 +577,9 @@ SphereCollider:
   m_GameObject: {fileID: 2023417654}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &2023417657
 MeshRenderer:
