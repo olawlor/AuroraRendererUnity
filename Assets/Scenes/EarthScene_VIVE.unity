@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 170076734}
-  m_IndirectSpecularColor: {r: 0.0020840433, g: 0.0020169045, b: 0.002031209, a: 1}
+  m_IndirectSpecularColor: {r: 0.0012090009, g: 0.0011721962, b: 0.0011812339, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -283,7 +283,6 @@ GameObject:
   - component: {fileID: 534669905}
   - component: {fileID: 534669904}
   - component: {fileID: 534669903}
-  - component: {fileID: 534669906}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -349,24 +348,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 534669902}
   m_LocalRotation: {x: -0.000000011175871, y: -0, z: 0.000000007450581, w: 1}
-  m_LocalPosition: {x: 0, y: 1.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 670647737}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 17.191, y: -123.77701, z: 25.52}
---- !u!114 &534669906
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 534669902}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3119bfb28038206fdb7849bfaa8f62c8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &670647736
 GameObject:
   m_ObjectHideFlags: 0
@@ -376,6 +363,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 670647737}
+  - component: {fileID: 670647738}
   m_Layer: 0
   m_Name: CameraFrame
   m_TagString: Untagged
@@ -391,13 +379,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 670647736}
   m_LocalRotation: {x: -0.123942055, y: -0.86613977, z: 0.23146929, w: 0.42527896}
-  m_LocalPosition: {x: 0, y: 0.84, z: -0.55}
+  m_LocalPosition: {x: 0, y: 0.835, z: -0.547}
   m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
   m_Children:
   - {fileID: 534669905}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &670647738
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 670647736}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3119bfb28038206fdb7849bfaa8f62c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1126855040
 GameObject:
   m_ObjectHideFlags: 0
