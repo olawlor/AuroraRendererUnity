@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class EarthSpinScript : MonoBehaviour
 {
+    bool spinning=true;
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -15,6 +17,11 @@ public class EarthSpinScript : MonoBehaviour
     {
         float spinrate = -0.5f; // degrees per second
         float spin = spinrate * Time.deltaTime;
-        transform.Rotate(Vector3.up * spin);
+        
+        if (Input.GetKeyDown("space")) 
+          spinning=!spinning; // toggle spin with spacebar
+        
+        if (spinning)
+          transform.Rotate(Vector3.up * spin);
     }
 }

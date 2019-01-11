@@ -74,5 +74,11 @@ public class CameraController : MonoBehaviour
       transform.position=transform.position*(min_altitude/transform.position.magnitude);
     }
     
+    
+    if (Input.GetKey("x") || Input.GetKey("escape"))
+    {
+        Application.Quit();
+    }
+    
   }
 }
