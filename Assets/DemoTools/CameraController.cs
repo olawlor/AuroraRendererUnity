@@ -69,7 +69,7 @@ public class CameraController : MonoBehaviour
       transform.Translate(0, 0, transAmount);
     }
     
-    float min_altitude = 1.001f; // keep outside of the planet
+    float min_altitude = 1.00001f; // keep outside of the planet
     if (transform.position.magnitude<min_altitude) {
       transform.position=transform.position*(min_altitude/transform.position.magnitude);
     }

@@ -32,14 +32,18 @@
         float4 trace_ray(ray r) {
           float3 color=float3(0.0,0.0,0.0);
           float3 cloud=fixed3(0.0,0.0,0.0);
+          float alpha=0.0;
           
-          float radius=1.0;
-          float hit_t=intersect_sphere(make_sphere(float3(0.0,0.0,0.0),radius),r);
+          float3 planet_center=float3(0.0,0.0,0.0);
+          float planet_radius=0.999;
+          float cloud_radius=1.0;
+          float hit_t=intersect_sphere(make_sphere(planet_center,cloud_radius),r);
           if (hit_t<miss_t) {
             float3 hit=ray_at(r,hit_t);  
             float2 uv = sphere_to_UV(hit);
             
             cloud = tex2D (_EarthCloud, uv) * _CloudColor;
+            alpha = clamp(length(cloud),0.0,1.0);
             
             float3 normal=normalize(hit); // surface normal for sphere is easy (object coords)
             float3 sun_dir = normalize(mul(unity_WorldToObject,float4(+1.0,0.0,0.0,0.0)).xyz);
@@ -47,11 +51,17 @@
             float lambert = clamp(dot(normal,sun_dir),0.0,1.0);
             color += lambert * cloud.rgb;
             color += 0.2 * cloud.rgb * _CloudNightGlow;
+            
+            // Check if we're the only part of the planet still visible:
+            if (intersect_sphere(make_sphere(planet_center,planet_radius),r)>=miss_t) 
+            { // clouds are sticking up over edge of planet--set alpha to opaque, so stars extinct properly
+              alpha=1.0;
+            }
           }
           //else clip(-1.0); // ray misses actual sphere (proxy geometry is upper bound)
           
           
-          return float4(color,clamp(length(cloud),0.0,1.0));
+          return float4(color,alpha);
         }
         
         ENDCG
