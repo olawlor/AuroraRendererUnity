@@ -6,6 +6,7 @@
     Properties
     {
         _AuroraPostColor ("Aurora Color Scaling (RGB)", Color) = (1,1,1,1)
+        _AuroraPostGamma ("Final output gamma correction", Range(0.8,3.0)) = 2.2
         _AtmosphereColor ("Atmosphere Color (RGB)", Color) = (0.03,0.04,0.06,1)
         _AtmosphereAlpha ("Atmosphere Alpha", Range(0.0,5.0)) = 1.0
         _AuroraCurtains ("Aurora Curtain Footprint (RGB)", 2D) = "black" {}
@@ -46,8 +47,9 @@ sampler2D _AuroraDeposition; // deposition function, x=intensity, y=height
 float4 _AtmosphereColor;
 float _AtmosphereAlpha;
 float4 _AuroraPostColor;
+float _AuroraPostGamma;
 
-static const float proxy_size = 1.2; // <- size of the proxy geometry, in Earth radii
+static const float proxy_size = 1.1; // <- size of the proxy geometry, in Earth radii
 
 static const float km=1.0/6371.0; // convert kilometers to render units (planet radii)
 static const float dt=1.0/6371.0; /* sampling rate for aurora, in kilometer steps: fine sampling gets *SLOW* */
@@ -103,9 +105,7 @@ float3 deposition_function(float height)
 // Apply nonlinear tone mapping to final summed output color
 float3 tonemap(float3 color) {
 	float len=length(color)+0.000001;
-	//return color/len*(1.0-exp(-len)); /* new length only asymptotically approaches 1 */
-	return color*pow(len,1.0/2.2-1.0); /* convert to sRGB: scale by len^(1/2.2)/len */
-	//return color*pow(len,1.0/3.0-1.0); // for printing: gamma of 3.0
+	return color*pow(len,1.0/_AuroraPostGamma-1.0); /* apply gamma */
 }
 
 /* Convert a 3D location to a 2D aurora map index (polar stereographic) */
