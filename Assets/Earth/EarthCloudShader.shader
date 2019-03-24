@@ -48,7 +48,7 @@
             float3 normal=normalize(hit); // surface normal for sphere is easy (object coords)
             float3 sun_dir = normalize(mul(unity_WorldToObject,float4(+1.0,0.0,0.0,0.0)).xyz);
             
-            float lambert = clamp(dot(normal,sun_dir),0.0,1.0);
+            float lambert = clamp(dot(normal,sun_dir),0.0,1.0)+0.05;
             color += lambert * cloud.rgb;
             color += 0.2 * cloud.rgb * _CloudNightGlow;
             
