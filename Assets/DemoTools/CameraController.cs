@@ -8,7 +8,7 @@ public class CameraController : MonoBehaviour
   // Start is called before the first frame update
   void Start()
   {
-      
+     TimeControl.ui_timelapse=20.0f;
   }
 
   // Update is called once per frame
@@ -23,6 +23,12 @@ public class CameraController : MonoBehaviour
     float speed = 0.5f * (altitude-0.99f); // WASD movement, earth radius/second
     float mouseSpeed=140.0f; // degrees rotation per pixel of mouse movement / second
   
+    // Update time zooming
+    if (Input.GetKeyDown(".")) TimeControl.ui_timelapse*=4.0f;
+    if (Input.GetKeyDown(",")) TimeControl.ui_timelapse/=4.0f;
+    if (Input.GetKeyDown("/")) TimeControl.ui_timelapse=1.0f;
+    TimeControl.Update();
+    
     float transAmount = speed * Time.deltaTime;
     float rotateAmount = rotateSpeed * Time.deltaTime;
     

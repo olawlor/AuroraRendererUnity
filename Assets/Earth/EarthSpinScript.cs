@@ -15,8 +15,8 @@ public class EarthSpinScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float spinrate = -0.5f; // degrees per second
-        float spin = spinrate * Time.deltaTime;
+        float spinrate = -360.0f/(24*24*60); // degrees per second
+        float spin = spinrate * Time.deltaTime * TimeControl.timelapse;
         
         if (Input.GetKeyDown("space")) 
           spinning=!spinning; // toggle spin with spacebar

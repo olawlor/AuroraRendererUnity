@@ -143,7 +143,7 @@ float3 sample_aurora(ray r,span s) {
 	[loop] while (t<s.h) {
 		float3 loc=ray_at(r,t);
 		sum+=sample_aurora(loc); // real curtains
-		float dist=(0.999-tex2D(_AuroraDistance,downtomap(loc)).r)*0.10;
+		float dist=(0.995-tex2D(_AuroraDistance,downtomap(loc)).r)*0.10;
 		if (dist<dt) dist=dt;
 		t+=dist;
 		counthit++;
