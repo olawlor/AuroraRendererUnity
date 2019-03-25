@@ -1,10 +1,11 @@
-﻿Shader "LawlorCode/AuroraShader"
+Shader "LawlorCode/AuroraShader"
 {
 // Aurora borealis / austrialis shader
 // Additive blending, so it needs to be the last pass: set Material's Render Queue to 3000.
 
     Properties
     {
+        _PlanetScale ("Radius of rendered planet (meters)", Float) = 6371000.0
         _AuroraPostColor ("Aurora Color Scaling (RGB)", Color) = (1,1,1,1)
         _AuroraPostGamma ("Final output gamma correction", Range(0.8,3.0)) = 2.2
         _AtmosphereColor ("Atmosphere Color (RGB)", Color) = (0.03,0.04,0.06,1)
@@ -143,7 +144,7 @@ float3 sample_aurora(ray r,span s) {
 	[loop] while (t<s.h) {
 		float3 loc=ray_at(r,t);
 		sum+=sample_aurora(loc); // real curtains
-		float dist=(0.995-tex2D(_AuroraDistance,downtomap(loc)).r)*0.10;
+		float dist=(0.997-tex2D(_AuroraDistance,downtomap(loc)).r)*0.10;
 		if (dist<dt) dist=dt;
 		t+=dist;
 		counthit++;
