@@ -23,7 +23,7 @@ public class OrbitalCamera_Vive : MonoBehaviour
   {
      P.Set(-0.09f,0.84f,-0.55f); // earth radii
      P=P*Re; // scale up to meters
-     V.Set(-7.9f,0.0f,0.0f); // km/sec
+     V=Vector3.Cross(P,new Vector3(0.0f,0.0f,-1.0f)).normalized*8.2f; // km/sec
      V=V*km; // scale up to meters
   }
 
@@ -53,6 +53,8 @@ public class OrbitalCamera_Vive : MonoBehaviour
     if (zoom>0.0f) { 
       Debug.Log("  time axis active: "+zoom);
       TimeControl.ui_timelapse=16.0f*Mathf.Pow(4.0f,1.0f+2.0f*zoom); 
+    } else {
+      TimeControl.ui_timelapse=1.0f;
     }
     TimeControl.Update();
     
@@ -90,10 +92,16 @@ public class OrbitalCamera_Vive : MonoBehaviour
     rocket=rocket.x*transform.right + rocket.y*transform.up + rocket.z*transform.forward;
     
 
-    float thrust=Input.GetAxis("Rocket Thrust");
+    float thrust=RocketThrustAxis.GetAxis(RocketHand);
     if (thrust>0.0f) {    
-      Debug.Log("  thrust axis active: "+thrust);
-      rocket.z+=thrust*rocketAccel; // FIXME: rotate to match controller orientation
+      Quaternion rot=RocketPose.GetLocalRotation(RocketHand);
+      rot = transform.rotation*rot; // local to world rotation
+      Vector3 rocketForward = rot * Vector3.forward;
+      Debug.Log("  thrust axis active: "+thrust+"  direction "+rocketForward);
+      rocket+=rocketForward*rocketAccel; // FIXME: rotate to match controller orientation
+      Engine_manager.g_ThrustLevel=thrust;
+    } else {
+      Engine_manager.g_ThrustLevel=0.0f;
     }
     
     

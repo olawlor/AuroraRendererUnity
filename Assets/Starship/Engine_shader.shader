@@ -31,6 +31,16 @@
     half _Glossiness;
     half _Metallic;
     fixed4 _Color;
+    
+    // Global thrust level: 0.0 = engines off.  1.0 = all engines on full.
+    uniform float g_Thrust_1;
+    uniform float g_Thrust_3;
+    uniform float g_Thrust_7;
+      
+      // Afterglow is the engine bells glowing after running for a bit.
+    uniform float g_AfterGlow_1;
+    uniform float g_AfterGlow_3;
+    uniform float g_AfterGlow_7;
 
     // Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
     // See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
@@ -52,53 +62,36 @@
       
       float4 world=float4(IN.worldPos,1.0f);
       float4 obj=mul(unity_WorldToObject,world);
-      obj.z+=15+1.5; // shift up to engine bell edge
-      float4 worldN=float4(IN.worldNormal,1.0f);
-      float4 objN=mul(unity_WorldToObject,worldN);
-    
-      // Global thrust level: 0.0 = engines off.  1.0 = all engines on full.
-      float g_ThrustLevel=0.2;
+      obj.z+=15+1.5; // shift Z up to engine bell edge
+      float3 worldN=IN.worldNormal;
+      float3 objN=normalize(mul((float3x3)unity_WorldToObject,worldN));
       
-      // Afterglow is the engine bells glowing after running for a bit.
-      float g_AfterGlow_1=1.0;
-      float g_AfterGlow_3=1.0;
-      float g_AfterGlow_7=0.0;
-      
-      // g_ThrustLevel cut points where we switch between 1-3-7 engines.
-      float cut_0=0.0;
-      float cut_1=0.15;
-      float cut_3=0.4;
-      
-      float burn=0.0; // blue-white burning
-      float glow=0.0; // orange-red afterglow
-      float raptor_r=2.1/2.0; // radius of one raptor (in the model)
+      float burn=0.0f; // blue-white burning
+      float glow=0.0f; // orange-red afterglow
+      float raptor_r=2.1f/2.0f; // radius of one raptor (in the model)
       if (abs(obj.x)<raptor_r) { // middle three engines
         if (abs(obj.y)<raptor_r) { // middlemost engine
           glow=g_AfterGlow_1;
-          if (g_ThrustLevel>cut_0) {
-            burn=1.0;
-          }
+          burn=g_Thrust_1;
         } else { // outer two
           glow=g_AfterGlow_3;
-          if (g_ThrustLevel>cut_1) {
-            burn=1.0;
-          }
+          burn=g_Thrust_3;
         }
       }
       else {
         glow=g_AfterGlow_7;
-        if (g_ThrustLevel>cut_3) {
-          burn=1.0;
-        }
+        burn=g_Thrust_7;
       }
       
-      glow*=clamp(obj.z/2.0,0.0,1.0); // drop off glow near edge
-      float3 emit=float3(0.7*glow, (0.1+clamp(obj.z/2.0-1.0,0.0,0.5))*glow, 0.05*glow);
-      if (objN.z<0.0) // inside surface of bell
-      {
-        float face=clamp(-objN.z,0.0,1.0);
-        emit += float3(face*burn,face*burn,burn); //frac(1.0f/2.1f*obj.xyz);
-      }
+      glow=clamp(2.0f*glow,0.0f,1.9f);
+      glow*=clamp(obj.z/2.0f,0.0f,1.0f); // drop off glow near edge
+      float3 emit=float3(0.7f*clamp(glow,0.0f,1.0f), 0.1f*glow,0.05f*glow); // (0.1f+clamp(obj.z/2.0f-1.0f,0.0f,0.5f))*glow, 0.05f*glow);
+      
+      burn=clamp(burn,0.0f,0.9f);
+      if (objN.z>=0.0f) burn=0.0f; // burning only visible on inside surface of bell
+      float face=clamp(-objN.z,0.0f,1.0f);
+      emit += float3(face*burn,face*burn,burn); //frac(1.0f/2.1f*obj.xyz);
+      
       o.Emission = emit;
     }
     ENDCG
