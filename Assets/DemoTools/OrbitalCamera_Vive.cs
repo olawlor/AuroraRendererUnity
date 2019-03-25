@@ -48,7 +48,7 @@ public class OrbitalCamera_Vive : MonoBehaviour
     if (Input.GetKeyDown(",")) TimeControl.ui_timelapse/=4.0f;
     if (Input.GetKeyDown("/")) TimeControl.ui_timelapse=1.0f;
 
-    Debug.Log("Orbital camera vive running");
+    // Debug.Log("Orbital camera vive running");
     float zoom=TimeZoomAxis.GetAxis(TimeHand);
     if (zoom>0.0f) { 
       Debug.Log("  time axis active: "+zoom);
