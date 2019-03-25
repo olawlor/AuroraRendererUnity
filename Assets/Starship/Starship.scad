@@ -1,15 +1,17 @@
-$fa=3; $fs=0.1; // fine detail
-// $fa=6; $fs=0.2; // coarse detail
+// $fa=3; $fs=0.1; // fine detail
+$fa=6; $fs=0.2; // coarse detail
 
 hulldia=9.0;
 height=48.0;
 curvelen=15.0;
 
 raptordia=2.0;
-raptorspace=raptordia*1.05;
+raptorspace=2.4;
 raptorhole=0.9*3*raptorspace;
 raptorheight=2.0;
-raptorstart=-1.0;
+raptorstart=-1.5;
+
+// square([2.1,hulldia],center=true); // dividing line for 3-on
 
 module roundcyl(dia,height) {
 	hull() {
@@ -91,7 +93,9 @@ module starship() {
 				leading_edge(0.0,height);
 				
 				translate([0,0,-0.01])
-				cylinder(d1=hulldia,d2=raptorhole,h=raptorstart+raptorheight*1.1);
+				cylinder(d1=hulldia,d2=raptorhole,h=raptorstart+raptorheight*0.8);
+				raptor_centers() 
+					cylinder(d=1.5,h=raptorheight+0.5);
 			}
 			
 			// Front control surfaces
@@ -122,13 +126,18 @@ module starship() {
 	}
 }
 
+raptorthroat=0.6;
 module raptorbell(outshift=0.0) {
 	hull() {
 		cylinder(d=raptordia+outshift,h=0.01);
 		midbell=0.5*raptorheight;
 		translate([0,0,raptorheight-midbell])
 			cylinder(d1=raptordia*0.85+outshift,
-			         d2=raptordia*0.5+outshift,h=raptorheight-midbell);
+			         d2=raptorthroat+outshift,h=raptorheight-midbell);
+		
+		// Rudimentary combustion chamber
+		translate([0,0,raptorheight])
+			cylinder(d1=raptorthroat,d2=0.1,h=raptorthroat/4);
 	}
 }
 module raptor_centers() {
@@ -146,18 +155,23 @@ module raptors() {
 	color([0.2,0.1,0.4])
 	raptor_centers() {
 		difference() {
-			raptorbell(0.01);
+			union() {
+				raptorbell(0.01);
+				translate([0,0,raptorheight-0.1])
+					cylinder(d=raptorthroat,h=1.0);
+			}
+			// Hollow out inside bell
 			translate([0,0,-0.01])
 				raptorbell(0.0);
+			
+			
 		}
-		translate([0,0,raptorheight])
-			cylinder(d=raptordia/2,h=2.0);
 	}
 }
 
 translate([0,0,-15]) // put COM in tanks
 {
-	//starship();
-	raptors();
+	starship();
+	// raptors();
 }
 
