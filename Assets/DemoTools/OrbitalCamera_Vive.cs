@@ -21,7 +21,7 @@ public class OrbitalCamera_Vive : MonoBehaviour
   // Start is called before the first frame update
   void Start()
   {
-     P.Set(-0.09f,0.85f,-0.55f); // earth radii
+     P.Set(-0.09f,0.84f,-0.55f); // earth radii
      P=P*Re; // scale up to meters
      V.Set(-7.9f,0.0f,0.0f); // km/sec
      V=V*km; // scale up to meters
@@ -127,8 +127,8 @@ public class OrbitalCamera_Vive : MonoBehaviour
     }
     
     // Bake output camera position
-    Vector3 pos=P*(1.0f/Re);// copy out simulated position to GUI position (in Earth radii)
-    pos.y-=1.8f*0.01f; // make up for user height
+    Vector3 pos=P*(1.0f/km);// copy out simulated position to GUI position (in Earth radii)
+    //pos.y-=1.8f; // make up for user height
     transform.position=pos;
 
     transform.Rotate(rotY,rotX,0);

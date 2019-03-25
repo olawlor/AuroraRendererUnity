@@ -2,13 +2,15 @@
 {
     Properties
     {
+        _PlanetRadius ("Radius of rendered planet (parent coords)", Float) = 1.0
+        
         _EarthCloud ("Clouds (RGB)", 2D) = "white" {}
         _CloudColor ("Cloud Color", Color) = (1,1,1,1)
         _CloudNightGlow ("Cloud Night Glow", Color) = (0.02,0.05,0.1,1)
     }
     SubShader
     {
-        Tags { "Queue"="Transparent" }
+        Tags { "Queue"="Geometry-6" }
         LOD 300
         
         

@@ -24,11 +24,12 @@ v2f raytrace_vert (appdata v)
 
 float4 trace_ray(ray r);
 
+uniform float _PlanetRadius;
 fixed4 raytrace_frag (v2f varyings) : SV_Target
 {
     // Set up global coordinate system
-    float3 geometry_target = varyings.vertobj;
-    float3 camera_start = varyings.camobj; 
+    float3 geometry_target = varyings.vertobj/_PlanetRadius;
+    float3 camera_start = varyings.camobj/_PlanetRadius; 
     float3 look_dir = normalize(geometry_target-camera_start);
     
     ray r; r.S=camera_start; r.D=look_dir;

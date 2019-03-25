@@ -5,18 +5,21 @@ Shader "LawlorCode/AuroraShader"
 
     Properties
     {
-        _PlanetScale ("Radius of rendered planet (meters)", Float) = 6371000.0
+        _PlanetRadius ("Radius of rendered planet (parent coords)", Float) = 1.0
+        
         _AuroraPostColor ("Aurora Color Scaling (RGB)", Color) = (1,1,1,1)
         _AuroraPostGamma ("Final output gamma correction", Range(0.8,3.0)) = 2.2
+        
         _AtmosphereColor ("Atmosphere Color (RGB)", Color) = (0.03,0.04,0.06,1)
         _AtmosphereAlpha ("Atmosphere Alpha", Range(0.0,5.0)) = 1.0
+        
         _AuroraCurtains ("Aurora Curtain Footprint (RGB)", 2D) = "black" {}
         _AuroraDistance ("Aurora Curtain Distance Field (Grayscale)", 2D) = "white" {}
         _AuroraDeposition ("Aurora Deposition vs Height (RGB)", 2D) = "green" {}
     }
     SubShader
     {
-        Tags { "Queue"="Transparent+100" } // need to render after skybox and clouds
+        Tags { "Queue"="Geometry-5" } // need to render after skybox and clouds
         LOD 100
         
         Blend One OneMinusSrcAlpha // Additive blending
@@ -45,6 +48,7 @@ sampler2D _AuroraCurtains; // actual curtain footprints
 sampler2D _AuroraDistance; // distance from curtains (0==far away, 1==close)
 sampler2D _AuroraDeposition; // deposition function, x=intensity, y=height
 
+float _PlanetRadius;
 float4 _AtmosphereColor;
 float _AtmosphereAlpha;
 float4 _AuroraPostColor;
@@ -371,8 +375,8 @@ float4 aurora_raytrace(ray r)
             fixed4 aurora_frag (v2f varyings) : SV_Target
             {
                 // Set up global coordinate system
-                float3 geometry_target = varyings.vertobj;
-                float3 camera_start = varyings.camobj; 
+                float3 geometry_target = varyings.vertobj/_PlanetRadius;
+                float3 camera_start = varyings.camobj/_PlanetRadius; 
                 float3 look_dir = normalize(geometry_target-camera_start);
                 
                 ray r; r.S=camera_start; r.D=look_dir;

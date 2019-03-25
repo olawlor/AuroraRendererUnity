@@ -2,6 +2,8 @@
 {
     Properties
     {
+        _PlanetRadius ("Radius of rendered planet (parent coords)", Float) = 1.0
+        
         _EarthAlbedo ("Albedo (RGB)", 2D) = "white" {}
         _AlbedoColor ("Albedo Color",Color) = (1,1,1,1)
         _EarthBump ("Bump (RGB)", 2D) = "white" {}
@@ -18,7 +20,7 @@
     }
     SubShader
     {
-        Tags { "Queue"="Transparent-1" }
+        Tags { "Queue"="Geometry-8" }
         LOD 300
         
         //Blend SrcAlpha OneMinusSrcAlpha // Ordinary blending
