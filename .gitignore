@@ -4,6 +4,13 @@
 [Bb]uild/
 [Bb]uilds/
 Assets/AssetStoreTools*
+Assets/SteamVR*
+MonoBleedingEdge*
+Aurora\ Interactive\ *
+Packages*
+ProjectSettings*
+*.dll
+*.exe
 
 # Visual Studio cache directory
 .vs/
