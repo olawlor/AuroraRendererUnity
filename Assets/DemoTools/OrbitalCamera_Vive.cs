@@ -31,9 +31,9 @@ public class OrbitalCamera_Vive : MonoBehaviour
   // Back to initial configuration
   private void Reset() 
   {
-     P.Set(-0.09f,0.84f,-0.55f); // earth radii
+     P.Set(-0.09f,0.843f,-0.55f); // earth radii
      P=P*Re; // scale up to meters
-     V=Vector3.Cross(P,new Vector3(0.0f,0.0f,-1.0f)).normalized*8.2f; // km/sec
+     V=Vector3.Cross(P,new Vector3(0.0f,0.0f,-1.0f)).normalized*7.88f; // km/sec
      V=V*km; // scale up to meters
      TimeControl.ui_timelapse=1.0f;
   }
@@ -133,7 +133,7 @@ public class OrbitalCamera_Vive : MonoBehaviour
     float airdrag=0.0f;
     if (height<60.0f) {
       float air_density=Mathf.Exp(-height/8.0f);
-      float dragfactor=0.1f+2.0f*Vector3.Cross(rocketForward.normalized,V.normalized).magnitude;
+      float dragfactor=0.01f+0.2f*Vector3.Cross(rocketForward.normalized,V.normalized).magnitude;
       
       airdrag=dragfactor*air_density;
       float dragloss=(1.0f-airdrag*dt);
