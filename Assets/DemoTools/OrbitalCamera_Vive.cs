@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using Valve.VR;
 
@@ -10,10 +11,13 @@ public class OrbitalCamera_Vive : MonoBehaviour
   
   public SteamVR_Input_Sources RocketHand=SteamVR_Input_Sources.RightHand;
   public SteamVR_Action_Pose RocketPose=SteamVR_Input.GetAction<SteamVR_Action_Pose>("default", "Pose");
-  public SteamVR_Action_Single RocketThrustAxis=SteamVR_Input.GetAction<SteamVR_Action_Single>("default", "RocketThrust");
+  public SteamVR_Action_Single RocketThrustAxis=SteamVR_Input.GetAction<SteamVR_Action_Single>("default", "Squeeze");
   
   public SteamVR_Input_Sources TimeHand=SteamVR_Input_Sources.LeftHand;
-  public SteamVR_Action_Single TimeZoomAxis=SteamVR_Input.GetAction<SteamVR_Action_Single>("default", "TimeZoom");
+  public SteamVR_Action_Pose TimePose=SteamVR_Input.GetAction<SteamVR_Action_Pose>("default", "Pose");
+  public SteamVR_Action_Single TimeZoomAxis=SteamVR_Input.GetAction<SteamVR_Action_Single>("default", "Squeeze");
+  
+  public SteamVR_Action_Boolean ResetButton=SteamVR_Input.GetAction<SteamVR_Action_Boolean>("default", "Reset");
   
   float km=1000.0f; // meters per kilometer
   float Re=6378000.0f; // radius of Earth, in meters
@@ -21,10 +25,17 @@ public class OrbitalCamera_Vive : MonoBehaviour
   // Start is called before the first frame update
   void Start()
   {
+    Reset();
+  } 
+  
+  // Back to initial configuration
+  private void Reset() 
+  {
      P.Set(-0.09f,0.84f,-0.55f); // earth radii
      P=P*Re; // scale up to meters
      V=Vector3.Cross(P,new Vector3(0.0f,0.0f,-1.0f)).normalized*8.2f; // km/sec
      V=V*km; // scale up to meters
+     TimeControl.ui_timelapse=1.0f;
   }
 
   // Update is called once per frame
@@ -33,6 +44,8 @@ public class OrbitalCamera_Vive : MonoBehaviour
     // Adapted from: http://3dcognition.com/unity-flight-simulator-phase-2/
     //   and http://wiki.unity3d.com/index.php/SmoothMouseLook
     
+    if (ResetButton.GetState(SteamVR_Input_Sources.Any))
+      Reset();
     
     float altitude = transform.position.magnitude;
     
@@ -57,6 +70,7 @@ public class OrbitalCamera_Vive : MonoBehaviour
       TimeControl.ui_timelapse=1.0f;
     }
     TimeControl.Update();
+    
     
     float rotX = 0.0f;
     float rotY = 0.0f;
@@ -93,12 +107,12 @@ public class OrbitalCamera_Vive : MonoBehaviour
     
 
     float thrust=RocketThrustAxis.GetAxis(RocketHand);
+    Quaternion rot=RocketPose.GetLocalRotation(RocketHand);
+    rot = transform.rotation*rot; // local to world rotation
+    Vector3 rocketForward = rot * Vector3.forward;
     if (thrust>0.0f) {    
-      Quaternion rot=RocketPose.GetLocalRotation(RocketHand);
-      rot = transform.rotation*rot; // local to world rotation
-      Vector3 rocketForward = rot * Vector3.forward;
       Debug.Log("  thrust axis active: "+thrust+"  direction "+rocketForward);
-      rocket+=rocketForward*rocketAccel; // FIXME: rotate to match controller orientation
+      rocket+=thrust*rocketForward*rocketAccel; // FIXME: rotate to match controller orientation
       Engine_manager.g_ThrustLevel=thrust;
     } else {
       Engine_manager.g_ThrustLevel=0.0f;
@@ -116,12 +130,16 @@ public class OrbitalCamera_Vive : MonoBehaviour
     P = P + dt*V; // Euler update for position
     
     float height=(P.magnitude-Re)/(km); // kilometers altitude
+    float airdrag=0.0f;
     if (height<60.0f) {
       float air_density=Mathf.Exp(-height/8.0f);
-      float dragfactor=0.1f;
-      float dragloss=(1.0f-dragfactor*air_density*dt);
+      float dragfactor=0.1f+2.0f*Vector3.Cross(rocketForward.normalized,V.normalized).magnitude;
+      
+      airdrag=dragfactor*air_density;
+      float dragloss=(1.0f-airdrag*dt);
       if (dragloss<0.5f) dragloss=0.5f;
       V=V*dragloss;
+      airdrag*=V.magnitude;
     }
     
     float min_altitude = 1.00001f*Re; // stay outside of the planet
@@ -140,6 +158,30 @@ public class OrbitalCamera_Vive : MonoBehaviour
     transform.position=pos;
 
     transform.Rotate(rotY,rotX,0);
+    
+    // Update the text readout gizmo
+    var TimeReadout=GameObject.FindWithTag("TimeReadout");
+    if (TimeReadout) {
+      TimeReadout.transform.localPosition=TimePose.GetLocalPosition(TimeHand);
+      TimeReadout.transform.localRotation=TimePose.GetLocalRotation(TimeHand);
+    }
+    var TextReadout=GameObject.FindWithTag("TimeReadoutText");
+    if (TextReadout) {
+      float alt=(P.magnitude-Re)/km;
+      float vel=V.magnitude/km;
+      string pre="";
+      if (airdrag>0.0) {
+        pre="Air drag: "+string.Format("{0:F1}",airdrag)+" m/s/s\n";
+      }
+      string text=pre+
+        "Time: x"+string.Format("{0:F1}",TimeControl.timelapse)+"\n"+
+        "Thrust: "+string.Format("{0:F0}",rocket.magnitude)+" m/s/s\n"+
+        "Speed: "+string.Format("{0:F2}",vel)+" km/s\n"+
+        "Vertical: "+string.Format("{0:F2}",Vector3.Dot(P.normalized,V)/km)+" km/s\n"+
+        "Altitude: "+(int)alt+" km";
+      
+      TextReadout.GetComponent<TextMesh>().text=text;
+    }
     
     
     if (Input.GetKey("x") || Input.GetKey("escape"))

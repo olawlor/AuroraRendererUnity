@@ -21,18 +21,18 @@
       "requirement": "optional"
     },
     {
-      "name": "/actions/default/in/RocketThrust",
-      "type": "vector1",
-      "requirement": "mandatory"
-    },
-    {
-      "name": "/actions/default/in/TimeZoom",
-      "type": "vector1",
-      "requirement": "mandatory"
-    },
-    {
       "name": "/actions/default/in/Pose",
       "type": "pose",
+      "requirement": "mandatory"
+    },
+    {
+      "name": "/actions/default/in/Squeeze",
+      "type": "vector1",
+      "requirement": "mandatory"
+    },
+    {
+      "name": "/actions/default/in/Reset",
+      "type": "boolean",
       "requirement": "mandatory"
     },
     {
@@ -43,7 +43,7 @@
   "action_sets": [
     {
       "name": "/actions/default",
-      "usage": "leftright"
+      "usage": "single"
     }
   ],
   "default_bindings": [
