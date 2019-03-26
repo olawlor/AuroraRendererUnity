@@ -2,8 +2,6 @@
 {
     Properties
     {
-        _PlanetRadius ("Radius of rendered planet (parent coords)", Float) = 1.0
-        
         _EarthAlbedo ("Albedo (RGB)", 2D) = "white" {}
         _AlbedoColor ("Albedo Color",Color) = (1,1,1,1)
         _EarthBump ("Bump (RGB)", 2D) = "white" {}
@@ -20,7 +18,7 @@
     }
     SubShader
     {
-        Tags { "Queue"="Geometry-8" }
+        Tags { "Queue"="Transparent-1" }
         LOD 300
         
         //Blend SrcAlpha OneMinusSrcAlpha // Ordinary blending
@@ -64,6 +62,7 @@
             float3 albedo = tex2D (_EarthAlbedo, uv) * _AlbedoColor;
             float3 cloud = tex2D (_EarthCloud, uv) * _CloudColor;
             float3 emit = tex2D (_EarthLight, uv) * _EmitColor;
+			float3 earthLights = tex2D(_EarthLight, uv);
             float3 glint = tex2D (_EarthGlint, uv) * _Glossiness;
             
             // Metallic and smoothness come from slider variables
@@ -74,10 +73,34 @@
             
             float lambert = dot(normal,sun_dir);
             if (lambert>0) {
-              color += lambert * max(0.8*albedo - 0.6*cloud,float3(0.0,0.0,0.0));
+				color += lambert * max(0.8*albedo - 0.6*cloud, float3(0.0, 0.0, 0.0));
               // fixme: gloss
-            }
-            color += emit;
+			}
+
+
+            //color += emit;
+			//color = (max(0.0, lambert) * albedo);
+			float3 e = emit;// pow(earthLights, 3.0) * emit;
+			if (lambert < 0.0) color = 8.0 * e;
+			else color = pow(1.0 - lambert, 100.0) * e;
+
+			//color = (1.0 - clamp(0.2 + lambert, 0.0, 1.0)) > 0.0 ? 8.0 * e : 0.0;
+
+			float3 L = sun_dir;
+			float3 N = normal;
+			float3 V = -r.D;
+			float3 H = normalize(L + V);
+			float NdotH = max(0.0, dot(N, H));
+			float NdotL = max(0.0, dot(N, L));
+
+			//color += NdotL * albedo + pow(1.0 - NdotL, 100.0) * albedo;
+			albedo = 0.8 * albedo;
+			color += 0.25 * clamp(pow(1.0 + lambert, 25.0), 0.0, 1.0) * albedo;
+			color += NdotL * albedo;
+
+			if (glint.r > 0.5) {
+				color += pow(NdotH, glint.r * 10000.0 + 1.0) + NdotL * albedo;
+			}
           }
           else clip(-1.0); // ray misses actual sphere (proxy geometry is upper bound)
           

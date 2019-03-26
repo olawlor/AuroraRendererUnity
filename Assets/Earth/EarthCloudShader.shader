@@ -2,15 +2,13 @@
 {
     Properties
     {
-        _PlanetRadius ("Radius of rendered planet (parent coords)", Float) = 1.0
-        
         _EarthCloud ("Clouds (RGB)", 2D) = "white" {}
         _CloudColor ("Cloud Color", Color) = (1,1,1,1)
         _CloudNightGlow ("Cloud Night Glow", Color) = (0.02,0.05,0.1,1)
     }
     SubShader
     {
-        Tags { "Queue"="Geometry-6" }
+        Tags { "Queue"="Transparent" }
         LOD 300
         
         
@@ -53,6 +51,14 @@
             float lambert = clamp(dot(normal,sun_dir),0.0,1.0)+0.05;
             color += lambert * cloud.rgb;
             color += 0.2 * cloud.rgb * _CloudNightGlow;
+
+			float3 N = normal;
+			float3 L = sun_dir;
+			float3 V = -r.D;
+			float3 H = normalize(L + V);
+			float NdotH = max(0.0, dot(N, H));
+			float k_s = pow(NdotH, 1.0 + 1000.0 * (1.0 - alpha));
+			color += .1 * k_s;
             
             // Check if we're the only part of the planet still visible:
             if (intersect_sphere(make_sphere(planet_center,planet_radius),r)>=miss_t) 
