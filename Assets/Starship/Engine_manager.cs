@@ -5,8 +5,8 @@ using UnityEngine;
 public class Engine_manager : MonoBehaviour
 {
   public static float g_ThrustLevel=0.0f;
-  public float g_AfterGlow_1=0.0f;
-  public float g_AfterGlow_3=1.0f;
+  public float g_AfterGlow_1=0.5f;
+  public float g_AfterGlow_3=0.0f;
   public float g_AfterGlow_7=0.0f;
 
   // Start is called before the first frame update
@@ -26,13 +26,13 @@ public class Engine_manager : MonoBehaviour
     float t1=0.0f, t3=0.0f, t7=0.0f;
     
     // Apply heat to all engines
-    float heatrate=0.2f*TimeControl.timelapse*Time.deltaTime;
+    float heatrate=Mathf.Clamp(0.2f*TimeControl.timelapse*Time.deltaTime,0.0f,0.5f);
     if (g_ThrustLevel>cut_0) { t1=1.0f; g_AfterGlow_1 = heatrate*1.0f + (1.0f-heatrate)*g_AfterGlow_1; }
     if (g_ThrustLevel>cut_1) { t3=1.0f; g_AfterGlow_3 = heatrate*1.0f + (1.0f-heatrate)*g_AfterGlow_3; }
     if (g_ThrustLevel>cut_3) { t7=1.0f; g_AfterGlow_7 = heatrate*1.0f + (1.0f-heatrate)*g_AfterGlow_7; }
     
     // Apply (radiative) cooling to all engines
-    float coolrate=0.1f*TimeControl.timelapse*Time.deltaTime;
+    float coolrate=Mathf.Clamp(0.1f*TimeControl.timelapse*Time.deltaTime,0.0f,0.5f);
     g_AfterGlow_1 *= 1.0f-coolrate;
     g_AfterGlow_3 *= 1.0f-coolrate;
     g_AfterGlow_7 *= 1.0f-coolrate;
