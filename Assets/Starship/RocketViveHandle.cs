@@ -19,9 +19,17 @@ public class RocketViveHandle : MonoBehaviour
   {
     Vector3 pos=Poser.GetLocalPosition(source);
     Quaternion rot=Poser.GetLocalRotation(source);
+    
+    // Move rocket when thrust is active
+    float thrust=Engine_manager.g_ThrustLevel;
+    if (thrust>0.0f) {
+      pos+=(transform.localRotation*Vector3.forward)*2.0f*thrust;
+    }
+    
     float rotSpeed=0.6f;
     transform.localRotation=Quaternion.Slerp(transform.localRotation,rot,rotSpeed*Time.deltaTime);
     float movSpeed=0.8f;
     transform.localPosition=Vector3.Slerp(transform.localPosition,pos,movSpeed*Time.deltaTime);
+    
   }
 }
